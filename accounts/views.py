@@ -51,11 +51,14 @@ class RegisterView(APIView):
         email= request.data.get("email" ,"")
         first_name= request.data.get("first_name" ,"")
         last_name= request.data.get("last_name" ,"")
+        # create-user
         def create_user():
             user =User.objects.create_user(phone=request.data.get('phone'),password=request.data.get('password'),
                 email=email,first_name=first_name,
                 last_name=last_name,type = request.data.get('type'))
             return user
+        
+        
         if request.data.get('phone') == None or request.data.get('password') == None \
                             or request.data.get('type') == None \
                             or request.data.get('password2') == None:
