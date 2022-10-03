@@ -25,7 +25,7 @@ class Myusermanager(UserManager):
             user = self.model(username=username, email=email, **extra_fields)
             user.password = make_password(password)
             user.save(using=self._db)
-            if type == '1':
+            if user.type == '1':
                 Manager.objects.create(user =user)
             return user
     def create_user(self, username=None, email=None, password=None, **extra_fields):
@@ -54,7 +54,7 @@ class User(AbstractUser):
    
 
 class profile(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -72,7 +72,7 @@ class Driver(profile):
     
 class Passenger(profile):
     nationalcode = models.CharField(max_length=15)
-    birthday = models.DateTimeField(null =True,validators =[validate_birthday])
+    birthday = models.DateField(null =True,validators =[validate_birthday])
     accountbalance = models.PositiveIntegerField()
     
     def get_ticket(self,price):
