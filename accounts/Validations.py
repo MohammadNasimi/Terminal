@@ -1,7 +1,6 @@
+import imp
 from django.core.exceptions import ValidationError
 import datetime
-
-
 def validate_phone(value : str) :
     if  not value.startswith("09") :
         raise ValidationError(
@@ -24,4 +23,11 @@ def validate_birthday(value):
         raise ValidationError(
             ('less today time'),
             params={'value': value},
+        )
+        
+def validate_password(pas1,pas2):
+    if pas1 != pas2:
+        raise ValidationError(
+            ('password must match'),
+            params={'value': pas1},
         )
