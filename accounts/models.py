@@ -75,6 +75,7 @@ class Passenger(profile):
     birthday = models.DateField(null =True,validators =[validate_birthday])
     accountbalance = models.PositiveIntegerField()
     
+    @property
     def get_ticket(self,price):
         self.accountbalance = self.accountbalance - price
         return self.accountbalance
