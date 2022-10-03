@@ -7,7 +7,7 @@ def validate_phone(value : str) :
             ('you should start with 09 '),
             params={'value': value},
         )
-    if  len(value)!=11:
+    if  len(value)!=11 or not value.isnumeric():
         raise ValidationError(
             ('size equal 11 example: 09141231213'),
             params={'value': value},
