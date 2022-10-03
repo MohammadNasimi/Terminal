@@ -25,7 +25,8 @@ class Myusermanager(UserManager):
             user = self.model(username=username, email=email, **extra_fields)
             user.password = make_password(password)
             user.save(using=self._db)
-            Manager.objects.create(user =user)
+            if type == '1':
+                Manager.objects.create(user =user)
             return user
     def create_user(self, username=None, email=None, password=None, **extra_fields):
         username = extra_fields['phone']
