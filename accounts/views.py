@@ -5,7 +5,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 #accounts
 from accounts.models import User ,Driver,Passenger
-from accounts.serializers import  LoginSerializer 
+from accounts.serializers import  LoginSerializer ,Driverserializer,Passengerserializer
 # jwt
 from rest_framework_simplejwt.tokens import RefreshToken
 #django auth 
@@ -30,6 +30,12 @@ class LoginView(generics.GenericAPIView):
             data =LoginSerializer(user).data
             data['refresh']=token['refresh']
             data['access']=token['access']
+            if user.type == '2':
+                driver = Driver.objects.get(user_id =user.id)
+                data = Driverserializer(Driver).data
+            elif user.type == '3':
+                passenger = Passenger.objects.get(user_id= user.id)
+                data = Passengerserializer(passenger).data
 
             return Response(data, status=status.HTTP_200_OK)
 
