@@ -19,7 +19,7 @@ def validate_birthday(value):
             ('you should older than 15 '),
             params={'value': value},
         )
-    if  datetime.datetime.now().year > value.year :
+    if  datetime.datetime.now().year < value.year :
         raise ValidationError(
             ('less today time'),
             params={'value': value},
