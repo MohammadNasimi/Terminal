@@ -33,10 +33,7 @@ class BusRoute(models.Model):
         hourmove = models.PositiveIntegerField(null =False,blank=False)
         capacity = models.PositiveIntegerField(null =False,blank=False)
 
-        @property
-        def capacitybus(self):
-            self.capacity = self.bus.capacity
-            return self.capacity  
+
         @property
         def remindcapacity(self):
             return self.capacity - 1 
