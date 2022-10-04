@@ -3,10 +3,12 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import generics, status
 from rest_framework.response import Response
+#time 
+from datetime import datetime
 #accounts
 from accounts.models import User ,Driver,Passenger
 from accounts.serializers import  LoginSerializer ,Driverserializer,Passengerserializer
-from accounts.Validations import validate_phone,validate_password
+from accounts.Validations import validate_phone,validate_password,validate_birthday
 # jwt
 from rest_framework_simplejwt.tokens import RefreshToken
 #django auth 
@@ -74,6 +76,15 @@ class RegisterView(APIView):
         except:
             return Response({'detail:':'password must to mutch'},
                             status=status.HTTP_400_BAD_REQUEST)
+        if request.data.get('birthday') != None: 
+            date_str =request.data.get('birthday')
+            date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
+
+            try:
+                validate_birthday(date_object)
+            except:
+                return Response({'detail:':'age more than 15'},
+                                status=status.HTTP_400_BAD_REQUEST)
         #################################
         # check type 
         try:
