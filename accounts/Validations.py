@@ -14,7 +14,7 @@ def validate_phone(value : str) :
         )
         
 def validate_birthday(value):
-    if  datetime.datetime.now().year - value.year > 15:
+    if  datetime.datetime.now().year - value.year < 15:
         raise ValidationError(
             ('you should older than 15 '),
             params={'value': value},
