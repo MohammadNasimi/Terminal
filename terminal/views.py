@@ -1,5 +1,7 @@
 #django
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
 # Create your views here.
 #serializer
 from terminal.serializers import Routeserializer,Ticketserializer,Busserializer
@@ -44,11 +46,24 @@ class CreateBusView(ListCreateAPIView):
         codebus = self.request.GET.get('codebus')
         if codebus is not None:
             queryset=queryset.filter(codebus= codebus)
+        if self.request.user.type == '2':
+            queryset =queryset.filter(driver__user_id = self.request.user.id)
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        if not Bus.objects.filter( driver__user_id =self.request.user.id) :
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({'data':'exist this driver'},status=status.HTTP_400_BAD_REQUEST)
       
     def perform_create(self, serializer):
         driver = Driver.objects.get(user_id = self.request.user.id)
         serializer.save(driver_id = driver.id)
+
         
         
         # date = self.request.GET.get('date')
