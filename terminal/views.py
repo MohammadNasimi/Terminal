@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework import status
 # Create your views here.
 #serializer
-from terminal.serializers import Routeserializer,Ticketserializer,Busserializer
+from terminal.serializers import Routeserializer,Ticketserializer,Busserializer,BusRouteserializer
 #models
-from terminal.models import Route,Bus
+from terminal.models import Route,Bus,BusRoute
 from accounts.models import Manager,Driver
 #rest framework
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
@@ -65,8 +65,30 @@ class CreateBusView(ListCreateAPIView):
         serializer.save(driver_id = driver.id)
 
         
+###########BUSROUTE############################
+class CreateBusRouteView(ListCreateAPIView):
+    serializer_class = BusRouteserializer
+    permission_classes =[IsAuthenticated]
+     
+    def get_queryset(self):
+        queryset =BusRoute.objects.all()
+        date = self.request.GET.get('date')
         
-        # date = self.request.GET.get('date')
-        # if date is not None:
-        #     queryset=queryset.filter(date=date.fromisoformat(date))
-        # return queryset
+        if date is not None:
+            queryset=queryset.filter(date=date.fromisoformat(date))
+            
+        begin = self.request.GET.get('begin')
+        destination = self.request.GET.get('destination')
+        
+        if begin is not None and destination is not None:
+            queryset=queryset.filter(route__begin =begin , route__destination =destination)
+        elif  begin is not None:
+            queryset=queryset.filter(route__begin =begin)
+        elif  destination is not None:
+            queryset=queryset.filter(route__destination=destination)
+        return queryset
+    
+    
+    def perform_create(self, serializer):
+        bus = Bus.objects.get(driver__user_id = self.request.user.id)
+        serializer.save(bus_id = bus.id,capacity =bus.capacity)
