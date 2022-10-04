@@ -5,23 +5,23 @@ from accounts.models import Manager,Driver,Passenger
 class Route(models.Model):
     manager = models.ForeignKey(Manager,on_delete=models.CASCADE)
     begin = models.CharField(max_length = 20) 
-    destination = models.CharField(max_length = 20,null =True,blank=True)
-    numberstation = models.PositiveIntegerField(null =True,blank=True)
-    distance = models.PositiveIntegerField(null =True,blank=True)
-    timeroute = models.PositiveIntegerField(null =True,blank=True)
+    destination = models.CharField(max_length = 20,null =False,blank=False)
+    numberstation = models.PositiveIntegerField(null =False,blank=False)
+    distance = models.PositiveIntegerField(null =False,blank=False)
+    timeroute = models.PositiveIntegerField(null =False,blank=False)
 
-    def __str__(self) -> str:
+    def __str__(self) :
         return f'{self.manager,self.distance}'
 
 class Bus(models.Model):
     driver = models.OneToOneField(Driver,on_delete=models.CASCADE)
     route = models.ForeignKey(Route,on_delete=models.CASCADE)
     codebus = models.CharField(max_length = 20) 
-    usebus = models.CharField(max_length = 20,null =True,blank=True)
-    productionyear = models.CharField(max_length = 20,null =True,blank=True)
-    capacity = models.PositiveIntegerField(null =True,blank=True)
-    date = models.DateField(null =True,blank=True)
-    hourmove = models.PositiveIntegerField(null =True,blank=True)
+    usebus = models.CharField(max_length = 20,null =False,blank=False)
+    productionyear = models.CharField(max_length = 20,null =False,blank=False)
+    capacity = models.PositiveIntegerField(null =False,blank=False)
+    date = models.DateField(null =False,blank=False)
+    hourmove = models.PositiveIntegerField(null =False,blank=False)
     
     def __str__(self) -> str:
         return f'{self.driver,self.route,self.codebus}'
