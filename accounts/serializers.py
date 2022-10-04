@@ -9,7 +9,7 @@ class LoginSerializer(serializers.ModelSerializer):
         fields = ('id', 'phone', 'password','email', 'first_name', 'last_name','type')
         read_only_fields = ('id','email', 'first_name', 'last_name')
 
-class RouteSerializer(serializers.ModelSerializer):
+class ManagerSerializer(serializers.ModelSerializer):
     user = LoginSerializer()
     class Meta:
         model = Manager
