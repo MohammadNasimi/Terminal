@@ -10,6 +10,8 @@ class Route(models.Model):
     distance = models.PositiveIntegerField(null =True,blank=True)
     timeroute = models.PositiveIntegerField(null =True,blank=True)
 
+    def __str__(self) -> str:
+        return f'{self.manager,self.distance}'
 
 class Bus(models.Model):
     driver = models.OneToOneField(Driver,on_delete=models.CASCADE)
@@ -21,6 +23,8 @@ class Bus(models.Model):
     date = models.DateField(null =True,blank=True)
     hourmove = models.PositiveIntegerField(null =True,blank=True)
     
+    def __str__(self) -> str:
+        return f'{self.driver,self.route,self.codebus}'
     
     @property
     def remindcapacity(self):
@@ -32,6 +36,9 @@ class Ticket(models.Model):
     passenger = models.ForeignKey(Passenger,on_delete=models.CASCADE)
     bus = models.ForeignKey(Bus,on_delete=models.CASCADE)
     Cost = models.PositiveIntegerField()
+    
+    def __str__(self) -> str:
+        return f'{self.passenger,self.bus}'
     
     @property
     def costticket(self):
