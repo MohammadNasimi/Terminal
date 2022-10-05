@@ -11,7 +11,8 @@ from accounts.models import Manager,Driver,Passenger
 #rest framework
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 # permistions
-from terminal.permissions import IsOwnerOrReadOnlyRoute,IsOwnerOrReadOnlyBus,IsOwnerOrReadOnlyTicket
+from terminal.permissions import IsOwnerOrReadOnlyRoute,IsOwnerOrReadOnlyBus,\
+                            IsOwnerOrReadOnlyTicket,IsOwnerOrReadOnlyRouteDetail
 # other app import
 from datetime import date
 ###########ROUTE############################
@@ -35,6 +36,12 @@ class CreateRouteView(ListCreateAPIView):
         manager = Manager.objects.get(user_id = self.request.user.id)
         serializer.save(manager_id = manager.id)  
         
+class UpdateRouteView(RetrieveUpdateDestroyAPIView):
+    permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyRouteDetail]
+    serializer_class =Routeserializer
+    def get_queryset(self):
+        queryset = Route.objects.all()
+        return queryset
     
 ##############BUS##########################################
 class CreateBusView(ListCreateAPIView):
@@ -111,7 +118,7 @@ class CreateTicketView(ListCreateAPIView):
         busroute =BusRoute.objects.get(id= request.data['busRoute'])
         busroute.capacity =busroute.capacity - 1
         if busroute.capacity <=0:
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'data':'bus full '}, status=status.HTTP_400_BAD_REQUEST)
         else:    
             busroute.save()
         serializer.is_valid(raise_exception=True)
