@@ -6,12 +6,12 @@ from rest_framework import status
 #serializer
 from terminal.serializers import Routeserializer,Ticketserializer,Busserializer,BusRouteserializer
 #models
-from terminal.models import Route,Bus,BusRoute
-from accounts.models import Manager,Driver
+from terminal.models import Route,Bus,BusRoute,Ticket
+from accounts.models import Manager,Driver,Passenger
 #rest framework
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 # permistions
-from terminal.permissions import IsOwnerOrReadOnlyRoute,IsOwnerOrReadOnlyBus
+from terminal.permissions import IsOwnerOrReadOnlyRoute,IsOwnerOrReadOnlyBus,IsOwnerOrReadOnlyTicket
 # other app import
 from datetime import date
 ###########ROUTE############################
@@ -92,3 +92,32 @@ class CreateBusRouteView(ListCreateAPIView):
     def perform_create(self, serializer):
         bus = Bus.objects.get(driver__user_id = self.request.user.id)
         serializer.save(bus_id = bus.id,capacity =bus.capacity)
+
+#####################Ticket##########################
+class CreateTicketView(ListCreateAPIView):
+    serializer_class = Ticketserializer
+    permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyTicket]
+     
+    def get_queryset(self):
+        if self.request.user.type == '3':
+            queryset =Ticket.objects.filter(passenger__user_id = self.request.user.id)
+        else:
+            queryset = Ticket.objects.all()
+        return queryset
+        
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        ############
+        busroute =BusRoute.objects.get(id= request.data['busRoute'])
+        busroute.capacity =busroute.capacity - 1
+        if busroute.capacity <=0:
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:    
+            busroute.save()
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer,busroute.route.distance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def perform_create(self, serializer,distance):
+        passenger = Passenger.objects.get(user_id = self.request.user.id)
+        serializer.save(passenger_id = passenger.id,cost =100*distance)
