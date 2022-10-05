@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from terminal.models import BusRoute, Route,Bus,Ticket
 #ser accounts model 
-from accounts.serializers import ManagerSerializer,Driverserializer
+from accounts.serializers import ManagerSerializer,Driverserializer,Passengerserializer
 class Routeserializer(serializers.ModelSerializer):
     manager = ManagerSerializer(read_only =True)
     class Meta:
@@ -26,6 +26,9 @@ class BusRouteserializer(serializers.ModelSerializer):
         
 
 class Ticketserializer(serializers.ModelSerializer):
+    passenger = Passengerserializer(read_only =True)
+
     class Meta:
         model = Ticket    
-        fields = ('passenger','bus','Cost')
+        fields = ('passenger','busRoute','cost')
+        read_only_fields = ['id','cost']
