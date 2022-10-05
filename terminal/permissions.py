@@ -29,14 +29,13 @@ class IsOwnerOrReadOnlyBus(permissions.BasePermission):
         if request.method == 'POST':
             if request.user.type == '2':
                 return True
-    
+class IsOwnerOrReadOnlyBusDetail(permissions.BasePermission):   
     def has_object_permission(self, request, view, obj):
-
         if request.method in permissions.SAFE_METHODS:
-            return True
+            if request.user.type == '1' or obj.driver.user == request.user:
+                return True
 
-        # Instance must have an attribute named `owner`.
-        return obj.manager.user == request.user
+        return obj.driver.user == request.user
 
 #permissions BusRoute
 class IsOwnerOrReadOnlyBusRoute(permissions.BasePermission):
