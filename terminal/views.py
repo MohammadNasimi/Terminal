@@ -13,7 +13,8 @@ from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIVi
 # permistions
 from terminal.permissions import IsOwnerOrReadOnlyRoute,IsOwnerOrReadOnlyBus,\
                             IsOwnerOrReadOnlyTicket,IsOwnerOrReadOnlyRouteDetail,\
-                                IsOwnerOrReadOnlyBusDetail
+                                IsOwnerOrReadOnlyBusDetail,IsOwnerOrReadOnlyBusRouteDetail,\
+                                IsOwnerOrReadOnlyTicketDetail
 # other app import
 from datetime import date
 ###########ROUTE############################
@@ -107,6 +108,13 @@ class CreateBusRouteView(ListCreateAPIView):
         bus = Bus.objects.get(driver__user_id = self.request.user.id)
         serializer.save(bus_id = bus.id,capacity =bus.capacity)
 
+class UpdateBusRouteView(RetrieveUpdateDestroyAPIView):
+    permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyBusRouteDetail]
+    serializer_class =BusRouteserializer
+    def get_queryset(self):
+        queryset = BusRoute.objects.all()
+        return queryset
+    
 #####################Ticket##########################
 class CreateTicketView(ListCreateAPIView):
     serializer_class = Ticketserializer
@@ -135,3 +143,10 @@ class CreateTicketView(ListCreateAPIView):
     def perform_create(self, serializer,distance):
         passenger = Passenger.objects.get(user_id = self.request.user.id)
         serializer.save(passenger_id = passenger.id,cost =100*distance)
+        
+class UpdateTicketView(RetrieveUpdateDestroyAPIView):
+    permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyTicketDetail]
+    serializer_class =Ticketserializer
+    def get_queryset(self):
+        queryset = Ticket.objects.all()
+        return queryset
