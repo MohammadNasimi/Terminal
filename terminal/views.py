@@ -12,7 +12,8 @@ from accounts.models import Manager,Driver,Passenger
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 # permistions
 from terminal.permissions import IsOwnerOrReadOnlyRoute,IsOwnerOrReadOnlyBus,\
-                            IsOwnerOrReadOnlyTicket,IsOwnerOrReadOnlyRouteDetail
+                            IsOwnerOrReadOnlyTicket,IsOwnerOrReadOnlyRouteDetail,\
+                                IsOwnerOrReadOnlyBusDetail
 # other app import
 from datetime import date
 ###########ROUTE############################
@@ -71,6 +72,12 @@ class CreateBusView(ListCreateAPIView):
         driver = Driver.objects.get(user_id = self.request.user.id)
         serializer.save(driver_id = driver.id)
 
+class UpdateBusView(RetrieveUpdateDestroyAPIView):
+    permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyBusDetail]
+    serializer_class =Busserializer
+    def get_queryset(self):
+        queryset = Bus.objects.all()
+        return queryset
         
 ###########BUSROUTE############################
 class CreateBusRouteView(ListCreateAPIView):
