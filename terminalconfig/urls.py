@@ -16,9 +16,46 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 
+##########swagger url setting
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi 
+from drf_yasg.generators import OpenAPISchemaGenerator
+
+class CustomOpenAPISchemaGenerator(OpenAPISchemaGenerator):
+  def get_schema(self, request=None, public=False):
+    """Generate a :class:.Swagger object with custom tags"""
+
+    swagger = super().get_schema(request, public)
+    swagger.tags = [
+        {
+            "name": "terminal",
+            "description": "terminal API"
+        },
+    ]
+
+    return swagger
+
+schema_view = get_schema_view( 
+openapi.Info(
+title="Terminal API",
+default_version="v1",
+description="A sample API for learning DRF",
+terms_of_service="https://www.google.com/policies/terms/",
+contact=openapi.Contact(email="hello@example.com"),
+license=openapi.License(name="BSD License"),
+),
+public=True,
+permission_classes=(permissions.AllowAny,),
+)
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/',include('accounts.urls')),
-    path('terminal/',include('terminal.urls'))
-
+    path('terminal/',include('terminal.urls')),
+    path('swagger/', schema_view.with_ui( 
+        'swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui( 
+        'redoc', cache_timeout=0), name='schema-redoc'),
 ]
