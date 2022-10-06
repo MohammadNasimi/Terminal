@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'terminal',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_yasg',
 
     ]
 
@@ -135,4 +136,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
+}
+##swagger
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        "Auth Token eg [Bearer {JWT}]": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
 }
