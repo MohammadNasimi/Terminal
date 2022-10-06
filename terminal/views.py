@@ -11,10 +11,12 @@ from accounts.models import Manager,Driver,Passenger
 #rest framework
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 # permistions
-from terminal.permissions import IsOwnerOrReadOnlyRoute,IsOwnerOrReadOnlyBus,\
-                            IsOwnerOrReadOnlyTicket,IsOwnerOrReadOnlyRouteDetail,\
-                                IsOwnerOrReadOnlyBusDetail,IsOwnerOrReadOnlyBusRouteDetail,\
-                                IsOwnerOrReadOnlyTicketDetail
+from terminal.permissions import *
+#params and docs import
+from terminal import docs,params
+
+# drf-ysg for swagger import
+from drf_yasg.utils import swagger_auto_schema
 # other app import
 from datetime import date
 ###########ROUTE############################
@@ -38,13 +40,34 @@ class CreateRouteView(ListCreateAPIView):
         manager = Manager.objects.get(user_id = self.request.user.id)
         serializer.save(manager_id = manager.id)  
         
+    ############swagger ##################
+    @swagger_auto_schema(operation_description=docs.Route_list_get,tags=['terminal'],
+                         manual_parameters=[params.begin,params.destination])
+    def get(self, request, *args, **kwargs):
+            return self.list(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description=docs.Route_list_post,tags=['terminal'])   
+    def post(self, request, *args, **kwargs):
+                return self.create(request, *args, **kwargs)
+        
 class UpdateRouteView(RetrieveUpdateDestroyAPIView):
     permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyRouteDetail]
     serializer_class =Routeserializer
     def get_queryset(self):
         queryset = Route.objects.all()
         return queryset
-    
+    @swagger_auto_schema(operation_description=docs.Route_detail_retrieve,tags=['terminal'])   
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Route_detail_update,tags=['terminal'])   
+    def put(self, request, *args, **kwargs):
+            return self.update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Route_detail_patch,tags=['terminal'])   
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Route_detail_destroy,tags=['terminal'])   
+    def delete(self, request, *args, **kwargs):
+            return self.destroy(request, *args, **kwargs)
 ##############BUS##########################################
 class CreateBusView(ListCreateAPIView):
     serializer_class = Busserializer
@@ -72,13 +95,34 @@ class CreateBusView(ListCreateAPIView):
     def perform_create(self, serializer):
         driver = Driver.objects.get(user_id = self.request.user.id)
         serializer.save(driver_id = driver.id)
+        ############swagger ##################
+    @swagger_auto_schema(operation_description=docs.Bus_list_get,tags=['terminal'],
+                         manual_parameters=[params.codebus])
+    def get(self, request, *args, **kwargs):
+            return self.list(request, *args, **kwargs)
 
+    @swagger_auto_schema(operation_description=docs.Bus_list_post,tags=['terminal'])   
+    def post(self, request, *args, **kwargs):
+                return self.create(request, *args, **kwargs)
+            
 class UpdateBusView(RetrieveUpdateDestroyAPIView):
     permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyBusDetail]
     serializer_class =Busserializer
     def get_queryset(self):
         queryset = Bus.objects.all()
         return queryset
+    @swagger_auto_schema(operation_description=docs.Bus_detail_retrieve,tags=['terminal'])   
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Bus_detail_update,tags=['terminal'])   
+    def put(self, request, *args, **kwargs):
+            return self.update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Bus_detail_patch,tags=['terminal'])   
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Bus_detail_destroy,tags=['terminal'])   
+    def delete(self, request, *args, **kwargs):
+            return self.destroy(request, *args, **kwargs)
         
 ###########BUSROUTE############################
 class CreateBusRouteView(ListCreateAPIView):
@@ -107,6 +151,14 @@ class CreateBusRouteView(ListCreateAPIView):
     def perform_create(self, serializer):
         bus = Bus.objects.get(driver__user_id = self.request.user.id)
         serializer.save(bus_id = bus.id,capacity =bus.capacity)
+    @swagger_auto_schema(operation_description=docs.BusRoute_list_get,tags=['terminal'],
+            manual_parameters=[params.begin,params.destination])
+    def get(self, request, *args, **kwargs):
+            return self.list(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description=docs.BusRoute_list_post,tags=['terminal'])   
+    def post(self, request, *args, **kwargs):
+                return self.create(request, *args, **kwargs)
 
 class UpdateBusRouteView(RetrieveUpdateDestroyAPIView):
     permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyBusRouteDetail]
@@ -114,10 +166,21 @@ class UpdateBusRouteView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         queryset = BusRoute.objects.all()
         return queryset
-    
+    @swagger_auto_schema(operation_description=docs.BusRoute_detail_retrieve,tags=['terminal'])   
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.BusRoute_detail_update,tags=['terminal'])   
+    def put(self, request, *args, **kwargs):
+            return self.update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.BusRoute_detail_patch,tags=['terminal'])   
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.BusRoute_detail_destroy,tags=['terminal'])   
+    def delete(self, request, *args, **kwargs):
+            return self.destroy(request, *args, **kwargs)
 #####################Ticket##########################
 class CreateTicketView(ListCreateAPIView):
-    serializer_class = Ticketserializer
+    serializer_class = Ticketserializers
     permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyTicket]
      
     def get_queryset(self):
@@ -143,10 +206,28 @@ class CreateTicketView(ListCreateAPIView):
     def perform_create(self, serializer,distance):
         passenger = Passenger.objects.get(user_id = self.request.user.id)
         serializer.save(passenger_id = passenger.id,cost =100*distance)
-        
+    @swagger_auto_schema(operation_description=docs.Ticket_list_get,tags=['terminal'])
+    def get(self, request, *args, **kwargs):
+            return self.list(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description=docs.Ticket_list_post,tags=['terminal'])   
+    def post(self, request, *args, **kwargs):
+                return self.create(request, *args, **kwargs)
 class UpdateTicketView(RetrieveUpdateDestroyAPIView):
     permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyTicketDetail]
     serializer_class =Ticketserializer
     def get_queryset(self):
         queryset = Ticket.objects.all()
         return queryset
+    @swagger_auto_schema(operation_description=docs.Ticket_detail_retrieve,tags=['terminal'])   
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Ticket_detail_update,tags=['terminal'])   
+    def put(self, request, *args, **kwargs):
+            return self.update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Ticket_detail_patch,tags=['terminal'])   
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.Ticket_detail_destroy,tags=['terminal'])   
+    def delete(self, request, *args, **kwargs):
+            return self.destroy(request, *args, **kwargs)
