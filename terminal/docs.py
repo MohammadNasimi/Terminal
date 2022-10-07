@@ -65,16 +65,22 @@ Bus_detail_destroy ="""
 """
 # BusRoute docs
 BusRoute_list_get ="""
+برای همه قابل مشاهده است
 """
 BusRoute_list_post="""
+فقط راننده میواند بر اساس اتوبوسی که دارد بسازد
 """
 BusRoute_detail_retrieve ="""
+برای همه قابل مشاهده است
 """
 BusRoute_detail_update="""
+مدیر وصاحب ان میتواند ان  را تغییر دهد 
 """
 BusRoute_detail_patch="""
+مدیر وصاحب ان میتواند ان  را تغییر دهد 
 """
 BusRoute_detail_destroy ="""
+مدیر وصاحب ان میتواند ان  را پاک کند 
 """
 # BusRoute docs
 Ticket_list_get ="""
