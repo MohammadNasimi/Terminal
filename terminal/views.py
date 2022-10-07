@@ -180,7 +180,7 @@ class UpdateBusRouteView(RetrieveUpdateDestroyAPIView):
             return self.destroy(request, *args, **kwargs)
 #####################Ticket##########################
 class CreateTicketView(ListCreateAPIView):
-    serializer_class = Ticketserializers
+    serializer_class = Ticketserializer
     permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyTicket]
      
     def get_queryset(self):
