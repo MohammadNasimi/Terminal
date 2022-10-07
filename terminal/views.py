@@ -207,19 +207,28 @@ class CreateTicketView(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         ############
+
+        serializer.is_valid(raise_exception=True)
+        ################################
         busroute =BusRoute.objects.get(id= request.data['busRoute'])
         busroute.capacity =busroute.capacity - 1
-        if busroute.capacity <=0:
+        if busroute.capacity < 0:
             return Response({'data':'bus full '}, status=status.HTTP_400_BAD_REQUEST)
         else:    
-            busroute.save()
-        serializer.is_valid(raise_exception=True)
+            passenger = Passenger.objects.get(user_id = self.request.user.id)
+            if passenger.accountbalance - busroute.route.distance *1000 <=0:
+                return Response({'data':' not enough money'}, status=status.HTTP_400_BAD_REQUEST)
+            else:    
+                passenger.accountbalance =passenger.accountbalance - busroute.route.distance *1000
+                passenger.save()
+                busroute.save()
+        ###########################
         self.perform_create(serializer,busroute.route.distance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def perform_create(self, serializer,distance):
         passenger = Passenger.objects.get(user_id = self.request.user.id)
-        serializer.save(passenger_id = passenger.id,cost =100*distance)
+        serializer.save(passenger_id = passenger.id,cost =1000*distance)
     @swagger_auto_schema(operation_description=docs.Ticket_list_get,tags=['terminal'])
     def get(self, request, *args, **kwargs):
             return self.list(request, *args, **kwargs)
@@ -230,18 +239,26 @@ class CreateTicketView(ListCreateAPIView):
 class UpdateTicketView(RetrieveUpdateDestroyAPIView):
     permission_classes =[IsAuthenticated,IsOwnerOrReadOnlyTicketDetail]
     serializer_class =Ticketserializer
-    def get_queryset(self):
-        queryset = Ticket.objects.all()
-        return queryset
+    queryset = Ticket.objects.all()
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.passenger.accountbalance= instance.passenger.accountbalance + instance.busRoute.route.distance *1000 - 1000
+        instance.busRoute.capacity = instance.busRoute.capacity + 1
+        instance.busRoute.save()
+        instance.passenger.save()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        
     @swagger_auto_schema(operation_description=docs.Ticket_detail_retrieve,tags=['terminal'])   
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
     @swagger_auto_schema(operation_description=docs.Ticket_detail_update,tags=['terminal'])   
     def put(self, request, *args, **kwargs):
-            return self.update(request, *args, **kwargs)
+            return Response({'data':'you cant update'},status=status.HTTP_400_BAD_REQUEST)
     @swagger_auto_schema(operation_description=docs.Ticket_detail_patch,tags=['terminal'])   
     def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+            return Response({'data':'you cant update'},status=status.HTTP_400_BAD_REQUEST)
     @swagger_auto_schema(operation_description=docs.Ticket_detail_destroy,tags=['terminal'])   
     def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
