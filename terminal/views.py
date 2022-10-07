@@ -1,4 +1,5 @@
 #django
+import imp
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,7 +19,7 @@ from terminal import docs,params
 # drf-ysg for swagger import
 from drf_yasg.utils import swagger_auto_schema
 # other app import
-from datetime import date
+from datetime import date,datetime
 ###########ROUTE############################
 class CreateRouteView(ListCreateAPIView):
     serializer_class = Routeserializer
@@ -148,10 +149,13 @@ class CreateBusRouteView(ListCreateAPIView):
         return queryset
     
     def create(self, request, *args, **kwargs):
+        date_str =request.data.get('date')
+        date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
+        if datetime.date(datetime.now()) > date_object:
+            return Response({'data':'date should more than now'}, status=status.HTTP_400_BAD_REQUEST)
         try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            print(Bus.objects.get(driver__user_id = self.request.user.id))
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
