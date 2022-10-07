@@ -30,5 +30,5 @@ class Ticketserializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket    
-        fields = ('passenger','busRoute','cost')
+        fields = ('id','passenger','busRoute','cost')
         read_only_fields = ['id','cost']
