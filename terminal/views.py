@@ -152,7 +152,7 @@ class CreateBusRouteView(ListCreateAPIView):
         bus = Bus.objects.get(driver__user_id = self.request.user.id)
         serializer.save(bus_id = bus.id,capacity =bus.capacity)
     @swagger_auto_schema(operation_description=docs.BusRoute_list_get,tags=['terminal'],
-            manual_parameters=[params.begin,params.destination])
+            manual_parameters=[params.date,params.begin,params.destination])
     def get(self, request, *args, **kwargs):
             return self.list(request, *args, **kwargs)
 
