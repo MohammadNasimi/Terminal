@@ -39,16 +39,29 @@ Route_detail_destroy ="""
 """
 # Bus docs
 Bus_list_get ="""
+مدیر تمام اتوبوس ها را میبیند و هر راننده فقط اتوبوس های خود را میبیند
 """
 Bus_list_post="""
+فقط راننده میتواند اتوبوس جدید بسازد
+model sample:
+{
+	"codebus": کد اتوبوس,
+	"usebus": کارکد اتوبوس,
+	"productionyear": سال ساخت,
+	"capacity": ظرفیت
+}
 """
 Bus_detail_retrieve ="""
+مدیر وصاحب هر اتوبوس میتواند ان اتوبوس را ببیند 
 """
 Bus_detail_update="""
+فقط صاحب اتوبوس
 """
 Bus_detail_patch="""
+فقط صاحب اتوبوس
 """
 Bus_detail_destroy ="""
+فقط صاحب اتوبوس
 """
 # BusRoute docs
 BusRoute_list_get ="""
