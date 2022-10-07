@@ -84,14 +84,25 @@ BusRoute_detail_destroy ="""
 """
 # BusRoute docs
 Ticket_list_get ="""
+مدیر و صاحب بلیط میتواند بلیط را ببیند
 """
 Ticket_list_post="""
+فقط مسافر میتواند بلیط بخرد
+model sample:
+{
+	"busRoute":انتخاب ای دی مسیر 
+}
 """
 Ticket_detail_retrieve ="""
+مدیر و صاحب بلیط میتواند بلیط را ببیند
+
 """
 Ticket_detail_update="""
+نمی توان اپدیت کرد
 """
 Ticket_detail_patch="""
+نمی توان اپدیت کرد
 """
 Ticket_detail_destroy ="""
+مدیر و صاحب بلیط میتوانند پاک کنند
 """
