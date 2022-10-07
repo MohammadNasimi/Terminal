@@ -9,3 +9,6 @@ destination= openapi.Parameter('destination',
 codebus =openapi.Parameter('codebus',
                               openapi.IN_QUERY, description="codebus param",
                               type=openapi.TYPE_STRING)
+date =openapi.Parameter('date',
+                              openapi.IN_QUERY, description="date param",
+                              type=openapi.TYPE_STRING)
