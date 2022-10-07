@@ -90,7 +90,7 @@ class CreateBusView(ListCreateAPIView):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response({'data':'exist this driver'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'data':'this driver has bus'},status=status.HTTP_400_BAD_REQUEST)
       
     def perform_create(self, serializer):
         driver = Driver.objects.get(user_id = self.request.user.id)
@@ -147,10 +147,21 @@ class CreateBusRouteView(ListCreateAPIView):
             queryset=queryset.filter(route__destination=destination)
         return queryset
     
-    
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            print(Bus.objects.get(driver__user_id = self.request.user.id))
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        except:
+            return Response({'data':'driver has not bus please add bus'},status=status.HTTP_400_BAD_REQUEST)
     def perform_create(self, serializer):
-        bus = Bus.objects.get(driver__user_id = self.request.user.id)
-        serializer.save(bus_id = bus.id,capacity =bus.capacity)
+            bus = Bus.objects.get(driver__user_id = self.request.user.id)
+            serializer.save(bus_id = bus.id,capacity =bus.capacity)
+
+
     @swagger_auto_schema(operation_description=docs.BusRoute_list_get,tags=['terminal'],
             manual_parameters=[params.date,params.begin,params.destination])
     def get(self, request, *args, **kwargs):
