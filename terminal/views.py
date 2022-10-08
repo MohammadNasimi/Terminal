@@ -155,16 +155,17 @@ class CreateBusRouteView(ListCreateAPIView):
         date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
         if datetime.date(datetime.now()) > date_object:
             return Response({'data':'date should more than now'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        except:
-            return Response({'data':'driver has not bus please add bus'},status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
-            bus = Bus.objects.get(driver__user_id = self.request.user.id)
+            try:
+                bus = Bus.objects.get(driver__user_id = self.request.user.id)
+            except:
+                return Response({'data':'driver has not bus please add bus'},status=status.HTTP_400_BAD_REQUEST)
             serializer.save(bus_id = bus.id,capacity =bus.capacity)
             create_ticket(serializer.data)
 
