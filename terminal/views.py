@@ -1,4 +1,5 @@
 #django
+from pickle import FALSE
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,6 +20,8 @@ from terminal import docs,params
 from drf_yasg.utils import swagger_auto_schema
 # other app import
 from datetime import date,datetime
+from terminal.ticketempty import create_ticket,check_delete_ticket
+
 ###########ROUTE############################
 class CreateRouteView(ListCreateAPIView):
     serializer_class = Routeserializer
@@ -163,6 +166,7 @@ class CreateBusRouteView(ListCreateAPIView):
     def perform_create(self, serializer):
             bus = Bus.objects.get(driver__user_id = self.request.user.id)
             serializer.save(bus_id = bus.id,capacity =bus.capacity)
+            create_ticket(serializer.data)
 
 
     @swagger_auto_schema(operation_description=docs.BusRoute_list_get,tags=['terminal'],
@@ -205,30 +209,32 @@ class CreateTicketView(ListCreateAPIView):
         return queryset
         
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        ############
-
-        serializer.is_valid(raise_exception=True)
-        ################################
-        busroute =BusRoute.objects.get(id= request.data['busRoute'])
-        busroute.capacity =busroute.capacity - 1
-        if busroute.capacity < 0:
-            return Response({'data':'bus full '}, status=status.HTTP_400_BAD_REQUEST)
-        else:    
-            passenger = Passenger.objects.get(user_id = self.request.user.id)
-            if passenger.accountbalance - busroute.route.distance *1000 <=0:
-                return Response({'data':' not enough money'}, status=status.HTTP_400_BAD_REQUEST)
-            else:    
-                passenger.accountbalance =passenger.accountbalance - busroute.route.distance *1000
-                passenger.save()
-                busroute.save()
-        ###########################
-        self.perform_create(serializer,busroute.route.distance)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    def perform_create(self, serializer,distance):
+        try:
+            id = request.data['id']
+        except:
+            return Response({'data':'please write id'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            ticket= Ticket.objects.get(id =id)
+        except:
+            return Response({'data':'does not exist this id'}, status=status.HTTP_400_BAD_REQUEST)
+        if ticket.kind ==True:
+            return Response({'data':'این بلیط خریداری شده است'}, status=status.HTTP_400_BAD_REQUEST)
+        
         passenger = Passenger.objects.get(user_id = self.request.user.id)
-        serializer.save(passenger_id = passenger.id,cost =1000*distance)
+        if passenger.accountbalance - ticket.busRoute.route.distance *1000 <=0:
+                return Response({'data':' not enough money'}, status=status.HTTP_400_BAD_REQUEST)
+        else:    
+                passenger.accountbalance =passenger.accountbalance - ticket.busRoute.route.distance *1000
+                ticket.kind =True
+                ticket.passenger = passenger
+                ticket.busRoute.capacity =ticket.busRoute.capacity - 1
+                ticket.busRoute.save()
+                passenger.save()
+                ticket.save()
+        return Response(Ticketserializer(ticket).data, status=status.HTTP_201_CREATED)
+
+    
+
     @swagger_auto_schema(operation_description=docs.Ticket_list_get,tags=['terminal'])
     def get(self, request, *args, **kwargs):
             return self.list(request, *args, **kwargs)
@@ -242,12 +248,17 @@ class UpdateTicketView(RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.passenger.accountbalance= instance.passenger.accountbalance + instance.busRoute.route.distance *1000 - 1000
-        instance.busRoute.capacity = instance.busRoute.capacity + 1
-        instance.busRoute.save()
-        instance.passenger.save()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if check_delete_ticket(instance)!= None:
+            return Response({"you cant delete this ticket time finish"},status= status.HTTP_400_BAD_REQUEST)
+        else:
+            instance.passenger.accountbalance= instance.passenger.accountbalance + instance.busRoute.route.distance *1000 - 1000
+            instance.busRoute.capacity = instance.busRoute.capacity + 1
+            instance.kind = False
+            instance.busRoute.save()
+            instance.passenger.save()
+            instance.passenger = None
+            instance.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         
     @swagger_auto_schema(operation_description=docs.Ticket_detail_retrieve,tags=['terminal'])   
