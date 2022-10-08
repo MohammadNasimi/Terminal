@@ -68,8 +68,9 @@ class IsOwnerOrReadOnlyTicketDetail(permissions.BasePermission):
 
         if request.method in permissions.SAFE_METHODS:
             if request.user.type == '3':
-                if obj.passenger.user == request.user:
-                    return True
+                if obj.passenger !=None:
+                    if obj.passenger.user == request.user:
+                        return True
             return True
         if request.user.type == '1':
             return True
