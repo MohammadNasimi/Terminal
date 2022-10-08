@@ -54,7 +54,7 @@ class Ticket(models.Model):
     startmovehour= models.PositiveIntegerField(null =False,blank=False)
     kind = models.BooleanField(default=False)
     def __str__(self) -> str:
-        return f'{self.passenger,self.busRoute}'
+        return f'{self.passenger,self.startplace,self.startmovehour}'
     
     @property
     def costticket(self):
