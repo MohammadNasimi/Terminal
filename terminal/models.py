@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 # accounts
 from accounts.models import Manager,Passenger,Driver
@@ -45,10 +46,10 @@ class BusRoute(models.Model):
         
         
 class Ticket(models.Model):
-    passenger = models.ForeignKey(Passenger,on_delete=models.CASCADE)
+    passenger = models.ForeignKey(Passenger,on_delete=models.CASCADE,null =True,blank =True)
     busRoute = models.ForeignKey(BusRoute,on_delete=models.CASCADE)
     cost = models.PositiveIntegerField()
-    
+    kind = models.BooleanField(default=False)
     def __str__(self) -> str:
         return f'{self.passenger,self.busRoute}'
     
