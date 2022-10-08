@@ -4,8 +4,17 @@ from rest_framework.response import Response
 from rest_framework import status
 def create_ticket(data):
     busroute =BusRoute.objects.get(id =data['id'])
-    for i in range(1,data['capacity']+1):
-       Ticket.objects.create(busRoute=busroute,cost =busroute.route.distance * 1000)
+    startmovehour =busroute.hourmove - round(busroute.route.timeroute/60)
+    startplace =busroute.route.begin
+    for j in range(1,round(abs(busroute.hourend - busroute.hourmove)
+                           /round(busroute.route.timeroute/60))+1):
+        startmovehour = startmovehour + round(busroute.route.timeroute/60)
+        startplace =busroute.route.begin
+        if j %2 == 0:
+            startplace =busroute.route.destination
+        for i in range(1,data['capacity']+1):
+            Ticket.objects.create(busRoute=busroute,startmovehour=startmovehour,
+                  startplace=startplace,cost =busroute.route.distance * 1000)
 
 def check_delete_ticket(ticket):
     if ticket.busRoute.date < datetime.date(datetime.now()): 
