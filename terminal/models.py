@@ -5,7 +5,7 @@ from accounts.models import Manager,Passenger,Driver
 # Create your models here.
 class Route(models.Model):
     manager = models.ForeignKey(Manager,on_delete=models.CASCADE)
-    begin = models.CharField(max_length = 20) 
+    begin = models.CharField(max_length = 20,null =False,blank=False) 
     destination = models.CharField(max_length = 20,null =False,blank=False)
     numberstation = models.PositiveIntegerField(null =False,blank=False)
     distance = models.PositiveIntegerField(null =False,blank=False)
@@ -32,6 +32,7 @@ class BusRoute(models.Model):
         bus = models.ForeignKey(Bus,on_delete=models.CASCADE,null =False,blank=False)
         date = models.DateField(null =False,blank=False)
         hourmove = models.PositiveIntegerField(null =False,blank=False)
+        hourend = models.PositiveIntegerField(null =False,blank=False)
         capacity = models.PositiveIntegerField(null =False,blank=False)
 
 
@@ -49,6 +50,8 @@ class Ticket(models.Model):
     passenger = models.ForeignKey(Passenger,on_delete=models.CASCADE,null =True,blank =True)
     busRoute = models.ForeignKey(BusRoute,on_delete=models.CASCADE)
     cost = models.PositiveIntegerField()
+    startplace = models.CharField(max_length = 20,null =False,blank=False) 
+    startmovehour= models.PositiveIntegerField(null =False,blank=False)
     kind = models.BooleanField(default=False)
     def __str__(self) -> str:
         return f'{self.passenger,self.busRoute}'
