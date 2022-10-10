@@ -10,12 +10,14 @@ from terminal.serializers import Routeserializer,Ticketserializer,Busserializer,
 from terminal.models import Route,Bus,BusRoute,Ticket
 from accounts.models import Manager,Driver,Passenger
 #rest framework
-from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView
+from rest_framework import filters
 # permistions
 from terminal.permissions import *
 #params and docs import
 from terminal import docs,params
-
+# from filter djagno
+from django_filters.rest_framework import DjangoFilterBackend
 # drf-ysg for swagger import
 from drf_yasg.utils import swagger_auto_schema
 # other app import
@@ -274,3 +276,12 @@ class UpdateTicketView(RetrieveUpdateDestroyAPIView):
     @swagger_auto_schema(operation_description=docs.Ticket_detail_destroy,tags=['terminal'])   
     def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
+        
+        
+########################search###########################
+class searchBusRouteList(ListAPIView):
+    queryset = BusRoute.objects.all()
+    serializer_class = BusRouteserializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['route__begin','route__destination' ,'bus__driver__user__phone','date']
+    
