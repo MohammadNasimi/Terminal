@@ -140,7 +140,14 @@ class CreateBusRouteView(ListCreateAPIView):
         
         if date is not None:
             queryset=queryset.filter(date=date.fromisoformat(date))
-            
+        datefirst = self.request.GET.get('datefirst')
+        dateend = self.request.GET.get('dateend')
+        if datefirst is not None and dateend is not None:
+            queryset=queryset.filter(date__gte=date.fromisoformat(datefirst),date__lte =dateend)
+        elif  datefirst is not None:
+            queryset=queryset.filter(date__gte=date.fromisoformat(datefirst))
+        elif  dateend is not None:
+            queryset=queryset.filter(date__lte =date.fromisoformat(dateend))
         begin = self.request.GET.get('begin')
         destination = self.request.GET.get('destination')
         
@@ -173,7 +180,8 @@ class CreateBusRouteView(ListCreateAPIView):
 
 
     @swagger_auto_schema(operation_description=docs.BusRoute_list_get,tags=['terminal'],
-            manual_parameters=[params.date,params.begin,params.destination])
+            manual_parameters=[params.date,params.begin,params.destination,
+                               params.datefirst,params.dateend])
     def get(self, request, *args, **kwargs):
             return self.list(request, *args, **kwargs)
 
