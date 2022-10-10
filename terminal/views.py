@@ -3,6 +3,7 @@ from pickle import FALSE
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from terminal.search import search_Bus, search_Busroute
 # Create your views here.
 #serializer
 from terminal.serializers import Routeserializer,Ticketserializer,Busserializer,BusRouteserializer
@@ -287,38 +288,19 @@ class UpdateTicketView(RetrieveUpdateDestroyAPIView):
         
 ########################search###########################
 class searchBusRouteList(ListAPIView):
-    queryset = BusRoute.objects.all()
-    serializer_class = BusRouteserializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['route__begin','route__destination' ,'bus__driver__user__phone','date']
-
+    from terminal.search import search_Bus,search_Busroute
     def list(self, request, *args, **kwargs):
         search = self.request.GET.get('search')
-        ###phone
-        phone =BusRoute.objects.filter(bus__driver__user__phone=search)
-        phone_queryset = self.filter_queryset(phone)
-        serializer_phone = self.get_serializer(phone_queryset, many=True)
-        ###begin
-        begin =BusRoute.objects.filter(route__begin=search)
-        begin_queryset = self.filter_queryset(begin)
-        serializer_begin = self.get_serializer(begin_queryset, many=True)
-        ####destination
-        destination =BusRoute.objects.filter(route__destination=search)
-        destination_queryset = self.filter_queryset(destination)
-        serializer_destination = self.get_serializer(destination_queryset, many=True)
-        
-        
-        ser = [{'phone': search}]+ serializer_phone.data +[{'begin': search}] \
-                    + serializer_begin.data +[{'destination': search}] \
-                    + serializer_destination.data  + [{'date': search}]
-        ####date
-        from accounts.Validations import is_valid_date
-        if is_valid_date(search):
-            date =BusRoute.objects.filter(date=search)
-            date_queryset = self.filter_queryset(date)
-            serializer_date = self.get_serializer(date_queryset, many=True)
-            ser = ser + serializer_date.data 
-
+        model = self.request.GET.get('model')
+        if model is not None:
+            for i in model.split(','):
+                if i == 'BusRoute':
+                    ser = search_Busroute(self,search)
+                elif i == 'Bus':
+                    ser = search_Bus(self,search)
+        else:
+                ser = search_Busroute(self,search) +search_Bus(self,search)
         return Response(ser)
     
 
