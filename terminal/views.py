@@ -1,9 +1,7 @@
 #django
-from pickle import FALSE
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from terminal.search import search_Bus, search_Busroute
 # Create your views here.
 #serializer
 from terminal.serializers import Routeserializer,Ticketserializer,Busserializer,BusRouteserializer
@@ -17,6 +15,8 @@ from rest_framework import filters
 from terminal.permissions import *
 #params and docs import
 from terminal import docs,params
+#terminal search
+from terminal.search import search_Bus, search_Busroute
 # from filter djagno
 from django_filters.rest_framework import DjangoFilterBackend
 # drf-ysg for swagger import
@@ -289,7 +289,6 @@ class UpdateTicketView(RetrieveUpdateDestroyAPIView):
 ########################search###########################
 class searchBusRouteList(ListAPIView):
     filter_backends = [filters.SearchFilter]
-    from terminal.search import search_Bus,search_Busroute
     def list(self, request, *args, **kwargs):
         search = self.request.GET.get('search')
         model = self.request.GET.get('model')
