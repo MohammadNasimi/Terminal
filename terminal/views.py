@@ -9,7 +9,7 @@ from terminal.serializers import Routeserializer,Ticketserializer,Busserializer,
 from terminal.models import Route,Bus,BusRoute,Ticket
 from accounts.models import Manager,Driver,Passenger
 #rest framework
-from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView,CreateAPIView
 from rest_framework import filters
 # permistions
 from terminal.permissions import *
@@ -287,25 +287,29 @@ class UpdateTicketView(RetrieveUpdateDestroyAPIView):
             return self.destroy(request, *args, **kwargs)
         
 ########################search###########################
-class searchBusRouteList(ListAPIView):
+class searchBusRouteList(CreateAPIView):
     filter_backends = [filters.SearchFilter]
-    def list(self, request, *args, **kwargs):
-        search = self.request.GET.get('search')
-        model = self.request.GET.get('model')
-        if model is not None:
+    def create(self, request, *args, **kwargs):
+        try:
+            search =str(request.data['search'])
+        except:
+            return Response({'please enter search field'})
+        try:
+            model = str(request.data['model'])
+            ser = {}          
             for i in model.split(','):
                 if i == 'BusRoute':
-                    ser = search_Busroute(self,search)
+                    ser =dict(list(search_Busroute(self,search).items()) + ser.items())
                 elif i == 'Bus':
-                    ser = search_Bus(self,search)
-        else:
-                ser = search_Busroute(self,search) +search_Bus(self,search)
-        return Response(ser)
+                    ser =dict(list(search_Bus(self,search).items())+ser.items())
+                return Response(ser)
+        except:
+            ser =dict(list(search_Busroute(self,search) .items()) + list(search_Bus(self,search).items()))
+            return Response(ser)
     
 
     
-    @swagger_auto_schema(operation_description=docs.search_busroute,tags=['search'],            
-                         manual_parameters=[params.search,params.model])   
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    @swagger_auto_schema(operation_description=docs.search_busroute,tags=['search']) 
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
     

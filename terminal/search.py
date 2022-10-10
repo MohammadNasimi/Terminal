@@ -1,5 +1,7 @@
 from terminal.models import BusRoute,Bus
 from terminal.serializers import BusRouteserializer,Busserializer
+from accounts.Validations import is_valid_date
+
 def search_Busroute(self,search):
     ###phone
     phone =BusRoute.objects.filter(bus__driver__user__phone=search)
@@ -15,16 +17,14 @@ def search_Busroute(self,search):
     serializer_destination = BusRouteserializer(destination_queryset, many=True)
 
     
-    ser = [{'driver/phone': search}]+ serializer_phone.data +[{'route/begin': search}] \
-                + serializer_begin.data +[{'route/destination': search}] \
-                + serializer_destination.data  + [{'date': search}]
+    ser = {'BusRoute': serializer_phone.data + serializer_begin.data \
+                    + serializer_destination.data}
     ####date
-    from accounts.Validations import is_valid_date
     if is_valid_date(search):
         date =BusRoute.objects.filter(date=search)
         date_queryset = self.filter_queryset(date)
         serializer_date = BusRouteserializer(date_queryset, many=True)
-        ser = ser + serializer_date.data 
+        ser['BusRoute']= ser['BusRoute'] + serializer_date.data
         
     return ser
 
@@ -34,5 +34,5 @@ def search_Bus(self,search):
     codebus =Bus.objects.filter(codebus=search)
     codebus_queryset = self.filter_queryset(codebus)
     serializer_codebus = Busserializer(codebus_queryset, many=True)
-    ser = [{'bus/codebus': search}] +serializer_codebus.data
+    ser = {'bus':serializer_codebus.data}
     return ser
