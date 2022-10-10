@@ -285,3 +285,7 @@ class searchBusRouteList(ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['route__begin','route__destination' ,'bus__driver__user__phone','date']
     
+    @swagger_auto_schema(operation_description=docs.search_busroute,tags=['search'])   
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    
