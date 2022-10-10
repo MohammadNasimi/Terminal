@@ -285,13 +285,43 @@ class UpdateTicketView(RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
         
-        
 ########################search###########################
 class searchBusRouteList(ListAPIView):
     queryset = BusRoute.objects.all()
     serializer_class = BusRouteserializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['route__begin','route__destination' ,'bus__driver__user__phone','date']
+
+    def list(self, request, *args, **kwargs):
+        search = self.request.GET.get('search')
+        ###phone
+        phone =BusRoute.objects.filter(bus__driver__user__phone=search)
+        phone_queryset = self.filter_queryset(phone)
+        serializer_phone = self.get_serializer(phone_queryset, many=True)
+        ###begin
+        begin =BusRoute.objects.filter(route__begin=search)
+        begin_queryset = self.filter_queryset(begin)
+        serializer_begin = self.get_serializer(begin_queryset, many=True)
+        ####destination
+        destination =BusRoute.objects.filter(route__destination=search)
+        destination_queryset = self.filter_queryset(destination)
+        serializer_destination = self.get_serializer(destination_queryset, many=True)
+        
+        
+        ser = [{'phone': search}]+ serializer_phone.data +[{'begin': search}] \
+                    + serializer_begin.data +[{'destination': search}] \
+                    + serializer_destination.data  + [{'date': search}]
+        ####date
+        from accounts.Validations import is_valid_date
+        if is_valid_date(search):
+            date =BusRoute.objects.filter(date=search)
+            date_queryset = self.filter_queryset(date)
+            serializer_date = self.get_serializer(date_queryset, many=True)
+            ser = ser + serializer_date.data 
+
+        return Response(ser)
+    
+
     
     @swagger_auto_schema(operation_description=docs.search_busroute,tags=['search'])   
     def get(self, request, *args, **kwargs):
