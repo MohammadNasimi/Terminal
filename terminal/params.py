@@ -12,3 +12,10 @@ codebus =openapi.Parameter('codebus',
 date =openapi.Parameter('date',
                               openapi.IN_QUERY, description="date param",
                               type=openapi.TYPE_STRING)
+
+datefirst =openapi.Parameter('datefirst',
+                              openapi.IN_QUERY, description="datefirst param",
+                              type=openapi.TYPE_STRING)
+dateend =openapi.Parameter('dateend',
+                              openapi.IN_QUERY, description="dateend param",
+                              type=openapi.TYPE_STRING)
