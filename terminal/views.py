@@ -287,5 +287,5 @@ class searchBusRouteList(ListAPIView):
     
     @swagger_auto_schema(operation_description=docs.search_busroute,tags=['search'])   
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
     
