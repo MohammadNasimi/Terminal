@@ -27,7 +27,7 @@ class BusRouteserializer(serializers.ModelSerializer):
         
     def get_ticket_obj(self, obj):
         results = Ticket.objects.filter(busRoute_id = obj.id)
-        return Ticketserializer(results, many=True).data
+        return Ticketkindserializer(results, many=True).data
 
 class Ticketserializer(serializers.ModelSerializer):
     passenger = Passengerserializer(read_only =True)
@@ -36,3 +36,9 @@ class Ticketserializer(serializers.ModelSerializer):
         model = Ticket    
         fields = ('id','passenger','busRoute','startmovehour','startplace','cost','kind')
         read_only_fields = ['busRoute','startmovehour','startplace','cost','kind']
+        
+class Ticketkindserializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket    
+        fields = ('id','startmovehour','startplace','cost','kind')
+        read_only_fields = ['id','startmovehour','startplace','cost','kind']
