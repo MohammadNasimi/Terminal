@@ -9,6 +9,9 @@ Route_list_get ="""
 	"distance": فاصله بر اساس کیلومتر,
 	"timeroute": زمان رسیدن از میدا به مقصد به دقیقه 
 }
+params:
+ begin مبدا
+ destination مقصد
 """
 Route_list_post="""
   فقط مدیر مسیر جدید ایجاد میکند
@@ -40,6 +43,9 @@ Route_detail_destroy ="""
 # Bus docs
 Bus_list_get ="""
 مدیر تمام اتوبوس ها را میبیند و هر راننده فقط اتوبوس های خود را میبیند
+params :
+ codebus  کد اتوبوس
+ 
 """
 Bus_list_post="""
 فقط راننده میتواند اتوبوس جدید بسازد
@@ -66,9 +72,14 @@ Bus_detail_destroy ="""
 # BusRoute docs
 BusRoute_list_get ="""
 برای همه قابل مشاهده است
+params:
+ begin مبدا
+ destination مقصد
+ date  تاریخ حرکت
 """
 BusRoute_list_post="""
 فقط راننده میواند بر اساس اتوبوسی که دارد بسازد
+اگر اتوبوس نداشته باشد باید اتوبوس بسازد و فقط یک اتوبوس میتواند داشته باشد 
 """
 BusRoute_detail_retrieve ="""
 برای همه قابل مشاهده است
@@ -105,4 +116,13 @@ Ticket_detail_patch="""
 """
 Ticket_detail_destroy ="""
 مدیر و صاحب بلیط میتوانند پاک کنند
+"""
+search_busroute = """
+کاربر میتواند به کمک 
+param search 
+عبارتی که جلوی سرچ است موارد زیر را سرچ کرده و هر مسیری که تعریف شده به کاربر نشان می دهد
+begin  مبدا مسیر	
+destination مقصد مسیر 
+phone شماره تلفن راننده
+date تاریخ حرکت
 """
