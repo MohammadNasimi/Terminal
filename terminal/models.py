@@ -13,7 +13,7 @@ class Route(models.Model):
 
     def __str__(self) :
         return f'{self.manager,self.distance}'
-
+   
 class Bus(models.Model):
     driver = models.OneToOneField(Driver,on_delete=models.CASCADE)
     codebus = models.CharField(max_length = 20,null =False,blank=False) 
