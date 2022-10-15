@@ -35,8 +35,6 @@ class IsOwnerOrReadOnlyBusDetail(permissions.BasePermission):
             if request.user.type == '1' or obj.driver.user == request.user:
                 return True
 
-        return obj.driver.user == request.user
-
 #permissions BusRoute
 class IsOwnerOrReadOnlyBusRoute(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -69,8 +67,7 @@ class IsOwnerOrReadOnlyTicketDetail(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             if request.user.type == '3':
                 if obj.passenger !=None:
-                    if obj.passenger.user == request.user:
-                        return True
+                    return obj.passenger.user == request.user
             return True
         if request.user.type == '1':
             return True
