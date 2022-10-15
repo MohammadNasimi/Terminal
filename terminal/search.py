@@ -4,15 +4,15 @@ from accounts.Validations import is_valid_date
 
 def search_Busroute(self,search):
     ###phone
-    phone =BusRoute.objects.filter(bus__driver__user__phone=search)
+    phone =BusRoute.objects.filter(bus__driver__user__phone__icontains=search)
     phone_queryset = self.filter_queryset(phone)
     serializer_phone = BusRouteserializer(phone_queryset, many=True)
     ###begin
-    begin =BusRoute.objects.filter(route__begin=search)
+    begin =BusRoute.objects.filter(route__begin__icontains=search)
     begin_queryset = self.filter_queryset(begin)
     serializer_begin = BusRouteserializer(begin_queryset, many=True)
     ####destination
-    destination =BusRoute.objects.filter(route__destination=search)
+    destination =BusRoute.objects.filter(route__destination__icontains=search)
     destination_queryset = self.filter_queryset(destination)
     serializer_destination = BusRouteserializer(destination_queryset, many=True)
 
