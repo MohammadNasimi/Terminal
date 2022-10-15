@@ -55,7 +55,7 @@ class CreateRouteView(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     def perform_create(self, serializer,distance):
         manager = Manager.objects.get(user_id = self.request.user.id)
-        serializer.save(manager_id = manager.id,distance =distance) 
+        serializer.save(manager_id = manager.id,distance = distance) 
     
     ############swagger ##################
     @swagger_auto_schema(operation_description=docs.Route_list_get,tags=['terminal'],
