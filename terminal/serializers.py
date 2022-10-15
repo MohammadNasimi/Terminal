@@ -7,7 +7,7 @@ class Routeserializer(serializers.ModelSerializer):
     class Meta:
         model = Route
         fields = ('id', 'manager', 'begin','destination','numberstation', 'distance', 'timeroute')
-        read_only_fields = ['id']
+        read_only_fields = ['id','distance']
 
 class Busserializer(serializers.ModelSerializer):
     driver = Driverserializer(read_only =True)
