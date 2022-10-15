@@ -37,7 +37,9 @@ def is_valid_date(date):
     if date:
         try:
             parse(date)
-            return True
+            if "-" in date:
+                return True
         except:
+            print(date)
             return False
     return False
