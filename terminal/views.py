@@ -24,6 +24,7 @@ from drf_yasg.utils import swagger_auto_schema
 # other app import
 from datetime import date,datetime
 from terminal.ticketempty import create_ticket,check_delete_ticket
+from terminal.calculate_distance_route import calculate_distance
 
 ###########ROUTE############################
 class CreateRouteView(ListCreateAPIView):
@@ -41,11 +42,21 @@ class CreateRouteView(ListCreateAPIView):
         elif  destination is not None:
             queryset=queryset.filter(destination=destination)
         return queryset
-      
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        try:
+            distance =calculate_distance(request.data['begin'],request.data['destination'])
+        except:
+            return Response({'please enter begin and destination this format 125:15'},
+                                 status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer,distance)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    def perform_create(self, serializer,distance):
         manager = Manager.objects.get(user_id = self.request.user.id)
-        serializer.save(manager_id = manager.id)  
-        
+        serializer.save(manager_id = manager.id,distance =distance) 
+    
     ############swagger ##################
     @swagger_auto_schema(operation_description=docs.Route_list_get,tags=['terminal'],
                          manual_parameters=[params.begin,params.destination])
