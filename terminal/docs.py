@@ -83,6 +83,12 @@ params:
 BusRoute_list_post="""
 فقط راننده میواند بر اساس اتوبوسی که دارد بسازد
 اگر اتوبوس نداشته باشد باید اتوبوس بسازد و فقط یک اتوبوس میتواند داشته باشد 
+{
+	"route": id model route,
+	"date": تاریخ حرکت,
+	"hourmove":  شروع ساعت کاری,
+	"hourend" :پایان ساعت کاری
+}
 """
 BusRoute_detail_retrieve ="""
 برای همه قابل مشاهده است
@@ -104,7 +110,7 @@ Ticket_list_post="""
 فقط مسافر میتواند بلیط بخرد
 model sample:
 {
-	"busRoute":انتخاب ای دی مسیر 
+	"id":انتخاب ای دی بلیط ساخته شده  
 }
 """
 Ticket_detail_retrieve ="""
