@@ -5,6 +5,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 #time 
 from datetime import datetime
+# drf-ysg for swagger import
+from drf_yasg.utils import swagger_auto_schema
 #accounts
 from accounts.models import User ,Driver,Passenger
 from accounts.serializers import  LoginSerializer ,Driverserializer,Passengerserializer
@@ -19,6 +21,7 @@ from accounts import docs
 class LoginView(generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = LoginSerializer
+    @swagger_auto_schema(operation_description=docs.log_in_post,tags=['accounts'])
     def post(self, request, *args, **kwargs):
         if "password" not in request.data or "phone" not in request.data:
             return Response({"detail": "اطلاعات ارسالی کامل نیست."} , status=status.HTTP_400_BAD_REQUEST)
@@ -51,6 +54,7 @@ class LoginView(generics.GenericAPIView):
         
 #register
 class RegisterPassengerView(APIView):
+    @swagger_auto_schema(operation_description=docs.register_passenger_post,tags=['accounts'])
     def post(self, request, *args, **kwargs):
         email= request.data.get("email" ,"")
         first_name= request.data.get("first_name" ,"")
@@ -103,6 +107,7 @@ class RegisterPassengerView(APIView):
 ##############################################
 ############register driver ##################
 class RegisterDriverView(APIView):
+    @swagger_auto_schema(operation_description=docs.register_driver_post,tags=['accounts'])
     def post(self, request, *args, **kwargs):
         email= request.data.get("email" ,"")
         first_name= request.data.get("first_name" ,"")
